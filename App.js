@@ -4,19 +4,29 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import CartDetailScreen from '../customGemelos/src/views/cardDetailView';
 import Home from '../customGemelos/src/views/home'
-
+import ProductDetailScreen from '../customGemelos/src/views/ProductViewScreen'
+import { Provider } from 'react-redux';
+import store from '../customGemelos/src/redux/store'
 
 const Stack = createNativeStackNavigator();
 
 
+
+
 export default function App() {
+
+
+
   return (
+      <Provider store={store}>
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
         <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
         <Stack.Screen name="CartDetailScreen" component={CartDetailScreen} />
+        <Stack.Screen name="ProductDetailScreen" component={ProductDetailScreen} options={{ title: 'Detalles del Producto' }} />
       </Stack.Navigator>
     </NavigationContainer>
+      </Provider>
     
   );
 }

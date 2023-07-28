@@ -24,15 +24,61 @@ const database = firebase.database();
 
 const fetchProducts = async () => {
   try {
-    const snapshot = await database.ref('/products').once('value');
-    const products = snapshot.val(); // Obtiene el objeto con los productos
-    console.log(products)
-    if (products) {
-      return Object.values(products); // Convierte el objeto en un array
+    const snapshot = await database.ref('/productList').once('value');
+    const productsData = snapshot.val();
+
+    if (productsData) {
+      // Convierte el objeto en un array de productos
+      const productList = Object.keys(productsData).map((key) => ({
+        id: productsData[key]['CODIGO DE FABRICA'],
+        name: productsData[key]['DESCRIPCION OPTIMA'],
+        price: parseFloat(productsData[key]['LISTA 1']), // Utiliza el valor numérico directamente
+        quantity: productsData[key]['STOCK'].toString(),
+        category: productsData[key]['RUBRO'], // Agregar la categoría
+        subcategory: productsData[key]['SUBRRUBRO'], // Agregar la subcategoría
+        codgecom: productsData[key]['COD GECOM'],
+        // Agrega más propiedades según sea necesario para el componente ProductList
+      }));
+
+      return productList;
     }
+
     return []; // Si no hay productos, devuelve un array vacío
   } catch (error) {
     console.error('Error fetching products:', error);
+    return [];
+  }
+};
+
+export const fetchCategories = async () => {
+  try {
+    const snapshot = await firebase.database().ref('/productList').once('value');
+    const productsData = snapshot.val();
+
+    // Extract unique category names from products' RUBRO and SUBRRUBRO properties
+    const categories = productsData
+      ? [...new Set(productsData.map((product) => product.RUBRO))]
+      : [];
+
+    const subcategories = productsData
+      ? [...new Set(productsData.map((product) => product.SUBRRUBRO))]
+      : [];
+
+    return { categories, subcategories };
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    return { categories: [], subcategories: [] };
+  }
+};
+
+export const fetchSubcategories = async () => {
+  try {
+    const snapshot = await firebase.database().ref('/productList').once('value');
+    const productsData = snapshot.val();
+    const subcategories = productsData ? [...new Set(productsData.map((product) => product.SUBRRUBRO))] : [];
+    return subcategories;
+  } catch (error) {
+    console.error('Error fetching subcategories:', error);
     return [];
   }
 };
